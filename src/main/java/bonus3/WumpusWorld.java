@@ -27,7 +27,28 @@ public class WumpusWorld {
         
         kb.tell("B21");
         kb.tell("OK11");
+        
         infer(kb, new String[] { "P31", "P22" });
+    }
+    
+    public void print_7_4_a() {
+        KnowledgeBase kb = new KnowledgeBase();
+        
+        kb.tell("S12 <=> W11 | W22 | W13");
+        kb.tell("B21 <=> P11 | P31 | P22");
+        kb.tell("OK11 <=> ~W11 & ~P11");
+        kb.tell("OK12 <=> ~W12 & ~P12");
+        kb.tell("OK21 <=> ~W21 & ~P21");
+        kb.tell("OK22 <=> ~W22 & ~P22");
+        
+        kb.tell("S12");
+        kb.tell("OK11");
+        kb.tell("OK12");
+        kb.tell("OK21");
+        kb.tell("OK22");
+        kb.tell("B21");
+        
+        infer(kb, new String[] { "W13", "OK22", "P31" });
     }
     
     private void infer(KnowledgeBase kb, String[] queries) {
@@ -54,5 +75,6 @@ public class WumpusWorld {
         
         ww.print_7_3_a();
         ww.print_7_3_b();
+        ww.print_7_4_a();
     }
 }
