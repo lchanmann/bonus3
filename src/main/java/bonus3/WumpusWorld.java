@@ -14,7 +14,7 @@ public class WumpusWorld {
 
         kb.tell("OK11");
         kb.tell("~B11");
-        infer(kb, new String[] { "OK12", "OK21"});
+        ttEntails(kb, "OK12", "OK21");
     }
     
     public void print_7_3_b() {
@@ -28,7 +28,7 @@ public class WumpusWorld {
         kb.tell("B21");
         kb.tell("OK11");
         
-        infer(kb, new String[] { "P31", "P22" });
+        ttEntails(kb, "P31", "P22");
     }
     
     public void print_7_4_a() {
@@ -48,10 +48,10 @@ public class WumpusWorld {
         kb.tell("OK22");
         kb.tell("B21");
         
-        infer(kb, new String[] { "W13", "OK22", "P31" });
+        ttEntails(kb, "W13", "OK22", "P31");
     }
     
-    private void infer(KnowledgeBase kb, String[] queries) {
+    private void ttEntails(KnowledgeBase kb, String... queries) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("KB: ").append(kb.toString()).append("\n");
