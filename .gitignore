@@ -1,1 +1,5 @@
 bin/
+tex/*.log
+tex/*.aux
+tex/*.out
+tex/*.synctex.gz
