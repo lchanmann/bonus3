@@ -42,6 +42,7 @@ public class WumpusWorld {
         kb.tell("B12 <=> P11 | P22 | P13");
         kb.tell("B21 <=> P11 | P31 | P22");
         kb.tell("S21 <=> W11 | W31 | W22");
+        kb.tell("OK11 <=> ~W11 & ~P11");
         kb.tell("OK22 <=> ~W22 & ~P22");
 
         kb.tell("S12");
