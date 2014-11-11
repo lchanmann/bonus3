@@ -16,12 +16,12 @@ public class WumpusWorld {
         KnowledgeBase kb = new KnowledgeBase();
 
         kb.tell("B11 <=> P12 | P21");
-        kb.tell("OK11 <=> ~P11");
-        kb.tell("OK12 <=> ~P12");
-        kb.tell("OK21 <=> ~P21");
+        kb.tell("S11 <=> W12 | W21");
+        kb.tell("OK12 <=> ~W12 & ~P12");
+        kb.tell("OK21 <=> ~W21 & ~P21");
 
-        kb.tell("OK11");
         kb.tell("~B11");
+        kb.tell("~S11");
 
         printEntailments(kb, "OK12", "OK21");
     }
@@ -30,12 +30,7 @@ public class WumpusWorld {
         KnowledgeBase kb = new KnowledgeBase();
 
         kb.tell("B21 <=> P11 | P31 | P22");
-        kb.tell("OK11 <=> ~P11");
-        kb.tell("OK12 <=> ~P12");
-        kb.tell("OK21 <=> ~P21");
-
         kb.tell("B21");
-        kb.tell("OK11");
 
         printEntailments(kb, "P31", "P22");
     }
@@ -44,18 +39,15 @@ public class WumpusWorld {
         KnowledgeBase kb = new KnowledgeBase();
 
         kb.tell("S12 <=> W11 | W22 | W13");
+        kb.tell("B12 <=> P11 | P22 | P13");
         kb.tell("B21 <=> P11 | P31 | P22");
-        kb.tell("OK11 <=> ~W11 & ~P11");
-        kb.tell("OK12 <=> ~W12 & ~P12");
-        kb.tell("OK21 <=> ~W21 & ~P21");
+        kb.tell("S21 <=> W11 | W31 | W22");
         kb.tell("OK22 <=> ~W22 & ~P22");
 
         kb.tell("S12");
+        kb.tell("~B12");
+        kb.tell("~S21");
         kb.tell("B21");
-        kb.tell("OK11");
-        kb.tell("OK12");
-        kb.tell("OK21");
-        kb.tell("OK22");
 
         printEntailments(kb, "W13", "OK22", "P31");
     }
