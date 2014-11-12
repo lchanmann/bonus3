@@ -1,0 +1,73 @@
+% report.tex - Bonus assignment 3 for Artificial Intelligence class
+% Chanmann Lim & Sam Jonesi - November 2014
+
+\documentclass[a4paper]{report}
+
+\usepackage[margin=1 in]{geometry}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\begin{document}
+\title{CS 7750: Report for bonus assignment 3}
+\author{Chanmann Lim \\Sam Jonesi}
+\date{November 13, 2014}
+\maketitle
+
+\lstset{language=Java,title=\lstname,basicstyle=\footnotesize}
+
+\section*{I. Implementation description}
+
+The project is implemented in Java programming language and make use of the existing code available online from the companion website of the book "Artificial Intelligent - A Modern Approach 3rd Edition" at \url{https://code.google.com/p/aima-java/}. \\
+
+The code infrastructure for dealing with propositional logic representation and reasoning has already been developed. We are here taking the advantages of the codebase to implement our \texttt{WumpusWorld Inference Program} by feeding knowledges into the knowledge base then using the existing Truth table entailments algorithm to make inferences for Figure. 7.3(a), 7.3(b), and 7.4(a) from the textbook. In general, there are three possibilities in solving propositional inference program 1) Truth table enumeration entailment 2) Forward or backward chaining and 3) Propositional logic resolution. However, the 2 latter solutions require certain forms of propositional logic sentence representations known as Horn form for proving by Forward or backward chaining and Conjunctive Normal Form (CNF) for Propositional logic resolution. In addition, the scope of the assignment to make inferences about the $4\times4$ wumpus world lead to discrete and small knowledge base of the program and Truth table enumeration seem to yield better performance than other alternatives and can be considered as a perfect fit for the given task. \\
+
+The single most important class to our implementation is the \texttt{KnowledgeBase} class and after instantiation of the class we can add the knowledges about our WumpusWorld into the knowledge base using \texttt{tell(aSentence)} method which accepts a \texttt{String} argument as a sentence of propositional logic and behind the scene the \texttt{KnowledgeBase} class has propositional logic parsing mechanism accounting for converting the given string to \texttt{Sentence} type which is necessary for various inferencing algorithms we might use later, then we use \texttt{askWithTTEntails(queryString)} method to make inferences. \\
+
+Despite its simplicity, one needs to understand the convention used to encode the logical connective along with symbols for using in the \texttt{tell(aSentence)} method introduced above. From the documentation in the \texttt{Connective.java} class we can see that the five common connectives are represented by: 
+
+\begin{verbatim}
+1. ~   (not).
+2. &   (and).
+3. |   (or).
+4. =>  (implication).
+5. <=> (biconditional).
+\end{verbatim}
+
+\noindent in this regard, we can represent there is no Breeze in square [1, 1] by \texttt{\textasciitilde{}B11}, and Breeze in square [2,1] biconditional there is a pit in square [1, 1] or [3, 1] or [2, 2] by \texttt{B21 <=> P11 | P31 | P22}.
+
+\paragraph{Caveat: } by using \texttt{tell(Sentence)} can we tell the knowledge base that a particular square is safe say in square [1, 1]? The answer is "technically possible" but it is not the right thing to do since we have to think from the agent point of views that there are only 5 percepts an agent can sense and they are Stench, Breeze, Glitter, Bump, and Scream so by \texttt{tell("OK11")} you are corrupting the knowledge base since "OK11" is already given by you as a fact instead of the derivation from propositional logic inferences. The same argument apply for telling the knowledge base that a particular square contains a pit or a wumpus should be avoided.\\
+
+\paragraph{Figure. 7.3(a) } shows that there is no Breeze and no Stench in square [1, 1] so we can feed in the knowledge by \texttt{tell("\textasciitilde{}B11")} and \texttt{tell("\textasciitilde{}S11")}, but we also need to provide what's breezy and stinky in square [1, 1] (meaning there is at least a pit or wumpus in the adjacent squares) so we can \texttt{tell("B11 <=> P12 | P21")} and \texttt{tell("S11 <=> W12 | W21")} and also feed in the definitions of OK in square [1, 2], and [2, 1] by \texttt{tell("OK12 <=> \textasciitilde{}W12 \& \textasciitilde{}P12")} and \texttt{tell("OK12 <=> \textasciitilde{}W21 \& \textasciitilde{}P21")} respectively before we could make any inferences by \texttt{askWithTTEntails("OK12")} and \texttt{askWithTTEntails("OK21")} to infer if it is indeed safe (OK) in those squares. Using this information, the program found that no breeze in [1, 1] implied that there was no pit in [1, 2] and [2, 1]. It then implied that if there was no pit in [1, 2] and [2, 1] that those squares and the same logic applied to imply there no wumpus in those squares finally the program concluded that those squares are safe. \\
+
+\paragraph{Figure. 7.3(b) } we told the knowledge base that a breeze in [2, 1] biconditionally implies a pit in [1, 1], [3, 1], or [2, 2] by \texttt{tell("B21 <=> P11 | P31 | P22")}. We then told the knowledge base that there exist a breeze in [2, 1] by \texttt{tell("B21")}. From there, it determined that a pit in [3, 1] or [2, 2] could be possible, but is not necessarily true. \\
+
+\paragraph{Figure. 7.4(a) } we told the knowledge base that a stench in [1, 2] biconditionally implies that there is a wumpus in [1, 1], [2, 2], or [1, 3]. We told the knowledge base that a breeze in [1, 2] if and only if there is a pit in [1, 1], [2, 2], or [1, 3]. We then told the knowledge base that a stench or a breeze in [2, 1] biconditionally implies that there is a wumpus or a pit respectively in the adjacent squares to [2, 1] then we told the knowledge base that [1, 2] has a stench but not a breeze, and that there was a breeze but not a stench in [2, 1]. Finally, we asked the knowledge base if a wumpus in [1, 3], ok in [2, 2], and a pit in [3, 1] were entailed. It then found that there was a wumpus in [1, 3] because there was a stench in [1, 2], but [1, 1], [2, 2] were safe. It found that [2, 2] was safe because there is no stench in [2, 1] and no breeze in [1, 2] imply no wumpus and no pit in [1, 1] and [2, 2]. Finally, it a pit in [3, 1] entailed the knowledge base, because there was a breeze in [2, 1], but [1, 1] and [2, 2] were ok. \\
+
+\paragraph{Helper function: } \texttt{printEntailments(kb, queries)} is a helper function that print the output of the entailments provided a knowledge base and a list of queries. The function iterates the queries and asks entailment for each query string with \texttt{askWithTTEntails(queryString)} and its negation \texttt{askWithTTEntails("\textasciitilde{}" + queryString)}; if they both return false implied that the knowledge base could not make clear and solid inference and output "?" otherwise the result of \texttt{askWithTTEntails(queryString)} and its corresponding queryString will be appended to the output string which was constructed using \texttt{StringBuilder} class.
+
+\subsection*{II. Code:}
+\lstinputlisting{../src/main/java/bonus3/WumpusWorld.java}
+
+\subsection*{III. Program output:}
+
+\begin{verbatim}
+KB: (B11 <=> P12 | P21) & (S11 <=> W12 | W21) & (OK12 <=> ~W12 & ~P12) & 
+(OK21 <=> ~W21 & ~P21) & ~B11 & ~S11
+  -> OK12 = Yes
+  -> OK21 = Yes
+
+
+KB: (B21 <=> P11 | P31 | P22) & B21
+  -> P31 = ?
+  -> P22 = ?
+
+
+KB: (S12 <=> W11 | W22 | W13) & (B12 <=> P11 | P22 | P13) & (B21 <=> P11 | P31 | P22) & 
+(S21 <=> W11 | W31 | W22) & (OK11 <=> ~W11 & ~P11) & (OK22 <=> ~W22 & ~P22) & 
+S12 & ~B12 & ~S21 & B21
+  -> W13 = Yes
+  -> OK22 = Yes
+  -> P31 = Yes
+\end{verbatim}
+
+\end{document}
